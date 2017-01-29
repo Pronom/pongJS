@@ -15,10 +15,13 @@ $("body").on("keypress", function noName() {
   joueur1._code =  event.keycode || event.which;
   joueur2._code =  event.keycode || event.which;
   pauseCode = event.keycode || event.which;
-  console.log(pauseCode);
   if (pauseCode === 112) {
     if (pause === true) {
       pause = false;
+      console.log("X =" + joueur2.getX());
+      console.log("LongueurX ="+ (joueur2.getX()+joueur2.getLongueur()));
+      console.log("Y =" + joueur2.getY());
+      console.log("HauteurY ="+ (joueur2.getY()+joueur2.getHauteur()));
     }
     else {
       pause = true;
@@ -58,26 +61,30 @@ function init(){
   //Initialisation du joueur 1
   joueur1 = Object.create(classJoueur);
   //Appel de son constructeur
-  joueur1.constructeur(160, 40,1, "#cc0000", "#710404" , "red", "J1Bloc", "", -40, 30 ,20);
+  joueur1.constructeur(160, 40,1, "#cc0000", "#710404" , "red", "J1Bloc", "", 200, 30 ,20);
   //Définition du codes de touches Haut et Bas
   joueur1._up = 113;    //113 correspond à la touche 'Q'
   joueur1._down = 100;  //100 correspond à la touche 'D'
+  joueur1._limiteHaute = -40;
+  joueur1._limiteBasse = 700;
   //Création de l'élément HTML
   joueur1.fabriquerElement();
 
   //Initialisation du joueur 2
   joueur2 = Object.create(classJoueur);
   //Appel de son contrcuteur
-  joueur2.constructeur(160, 40,1, "#0618bd", "black" , "#0100ff", "J2Bloc", "", -200, zoneJ.width()-80 ,20);
+  joueur2.constructeur(160, 40,1, "#0618bd", "black" , "#0100ff", "J2Bloc", "", 60, zoneJ.width()-80 ,20);
   //Définition du codes de touches Haut et Bas
   joueur2._up = 52;   //52 correspond à la touche '4' du pavé numérique
   joueur2._down = 54; //54 correspond à la touche '6' du pavé numérique
+  joueur2._limiteHaute = -200;
+  joueur2._limiteBasse = 540;
   //Création de l'élément HTML
   joueur2.fabriquerElement();
   //Redéfinition de la méthode collide pour le joueur2
   //Ne peut être fait que la ou à été instancié l'objet
   joueur2.collideJ2 = function(objetExt){
-    if (((objetExt.getX()+objetExt.getLongueur()) >= (this.getX())) && ((objetExt.getY()-200)< this.getY()+this.getHauteur()) && ((objetExt.getY()+objetExt.getHauteur()-200)>=(this.getY())) /*&& (objetExt.getX()+objetExt.getLongueur()<this.getX()+this.getLongueur())*/) {
+    if (((objetExt.getX()+objetExt.getLongueur()) >= (this.getX())) && ((objetExt.getY()+this._limiteHaute)< this.getY()+this.getHauteur()) && ((objetExt.getY()+objetExt.getHauteur()+this._limiteHaute)>=(this.getY())) /*&& (objetExt.getX()+objetExt.getLongueur()<this.getX()+this.getLongueur())*/) {
       objetExt._incrementX *= -1;
       if (this.getX()-objetExt.getX()<5) {
         objetExt._incrementY *= -1;
@@ -340,10 +347,12 @@ var classJoueur = Object.create(objetBloc);
 classJoueur._up = 0;    //Pour attribuer le code de la tocuhe de déplacement Haut du bloc
 classJoueur._down = 0;  //Pour attribuer le code de la tocuhe de déplacement Bas du bloc
 classJoueur._code = 0;  //Code de la touche préssée courante
+classJoueur._limiteHaute = 0;
+classJoueur._limiteBasse = 0;
 //Vérifie si un element est dans la zone du bloc
 //Si oui lui change sa direction
 classJoueur.collide = function(objetExt){
-  if ((objetExt.getX() <= (this.getLongueur()+this.getX())) && ((objetExt.getY()-40+objetExt.getHauteur())> this.getY()) && ((objetExt.getY()-40)<(this.getY()+this.getHauteur())) && (objetExt.getX()+objetExt.getLongueur()>this.getX())) {
+  if ((objetExt.getX() <= (this.getLongueur()+this.getX())) && ((objetExt.getY()+this._limiteHaute+objetExt.getHauteur())> this.getY()) && ((objetExt.getY()+this._limiteHaute)<(this.getY()+this.getHauteur())) && (objetExt.getX()+objetExt.getLongueur()>this.getX())) {
     objetExt._incrementX *= -1;
     if (objetExt.getX()-this.getX()<5) {
       objetExt._incrementY *= -1;
@@ -365,4 +374,16 @@ classJoueur.keyPressed = function(){
 //Appelle la méthode keyPressed
 classJoueur.update = function joueurUpdate(){
     this.keyPressed();
+    this.limiteBasse();
+    this.limiteHaute();
+};
+classJoueur.limiteHaute = function(){
+  if (this.getY()<this._limiteHaute) {
+    this.setY(this._limiteHaute+1);
+  }
+};
+classJoueur.limiteBasse = function(){
+  if (this.getY()+this.getHauteur()>this._limiteBasse) {
+    this.setY(this._limiteBasse-this.getHauteur()-1);
+  }
 };
