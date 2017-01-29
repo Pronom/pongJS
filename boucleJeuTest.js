@@ -13,11 +13,12 @@ var pause = true, pauseCode = 0;
 
 //Permet la récupération du code de la touche clavier appuyée
 //Et permet de mettre en pause le jeu quand on appuie sur la touche P;
-$("body").on("keypress", function noName() {
+$("body").on("keydown", function noName() {
   joueur1._code =  event.keycode || event.which;
   joueur2._code =  event.keycode || event.which;
   pauseCode = event.keycode || event.which;
-  if (pauseCode === 112) {
+  console.log(pauseCode);
+  if (pauseCode === 80) {
     if (pause === true) {
       pause = false;
       console.log("X =" + joueur2.getX());
@@ -30,6 +31,7 @@ $("body").on("keypress", function noName() {
     }
     pauseCode = 0;
     $(".infoDepart").hide();
+    $(".infoIG").show();
   }
 });
 
@@ -48,11 +50,13 @@ $("#pause").click(function(){
     pause = true;
   }
   $(".infoDepart").hide();
+  $(".infoIG").show();
 });
 
 //Initialisation du jeux;
 //Permet de créer tout les paramètres et tout les éléments de base du jeu
 function init(){
+  $(".infoIG").hide();
   //Instanciation de la balle
   balle = Object.create(classBalle);
   balle._zoneJ = zoneJ; //Récupération de la balise de la zone de jeu
@@ -66,8 +70,8 @@ function init(){
   //Appel de son constructeur
   joueur1.constructeur(160, 40,1, "#cc0000", "#710404" , "red", "J1Bloc", "", 200, 30 ,20);
   //Définition du codes de touches Haut et Bas
-  joueur1._up = 113;    //113 correspond à la touche 'Q'
-  joueur1._down = 100;  //100 correspond à la touche 'D'
+  joueur1._up = 81;    //81 correspond à la touche 'Q'
+  joueur1._down = 68;  //68 correspond à la touche 'D'
   joueur1._limiteHaute = -40;
   joueur1._limiteBasse = 700;
   //Création de l'élément HTML
@@ -78,8 +82,8 @@ function init(){
   //Appel de son contrcuteur
   joueur2.constructeur(160, 40,1, "#0618bd", "black" , "#0100ff", "J2Bloc", "", 60, zoneJ.width()-80 ,20);
   //Définition du codes de touches Haut et Bas
-  joueur2._up = 52;   //52 correspond à la touche '4' du pavé numérique
-  joueur2._down = 54; //54 correspond à la touche '6' du pavé numérique
+  joueur2._up = 100;   //52 correspond à la touche '4' du pavé numérique
+  joueur2._down = 102; //54 correspond à la touche '6' du pavé numérique
   joueur2._limiteHaute = -200;
   joueur2._limiteBasse = 540;
   //Création de l'élément HTML
@@ -89,16 +93,7 @@ function init(){
   joueur2.collideJ2 = function(objetExt){
     if (((objetExt.getX()+objetExt.getLongueur()) >= (this.getX())) && ((objetExt.getY()+this._limiteHaute)< this.getY()+this.getHauteur()) && ((objetExt.getY()+objetExt.getHauteur()+this._limiteHaute)>=(this.getY())) /*&& (objetExt.getX()+objetExt.getLongueur()<this.getX()+this.getLongueur())*/) {
       if (this._inBox !==true) {
-        if (objetExt._incrementX>0) {
-          objetExt._incrementX++;
-        }else {
-          objetExt._incrementX--;
-        }
-        if (objetExt._incrementY>0) {
-          objetExt._incrementY++;
-        }else {
-          objetExt._incrementY--;
-        }
+        this.vitesseBalle(objetExt);
         objetExt._incrementX *= -1;
         if (this.getX()-objetExt.getX()<5) {
           objetExt._incrementY *= -1;
@@ -344,12 +339,11 @@ classBalle.mvtBall = function(){
 //Affectation du score
 classBalle.mvtBallX = function(){
   if (this.getX()+this.getLongueur()>=this._zoneJ.width()) {
-    this._incrementX *= -1;
     this.resetBallPosition();
+    this._incrementX *= -1;
     this._scoreJ1++;
   }
   else if (this.getX()<=-1) {
-    this._incrementX *= -1;
     this.resetBallPosition();
     this._scoreJ2++;
   }
@@ -393,16 +387,7 @@ classJoueur._inBox = false;   //Objectif : Verouiller l'inversion d'incrémentat
 classJoueur.collide = function(objetExt){
   if ((objetExt.getX() <= (this.getLongueur()+this.getX())) && ((objetExt.getY()+this._limiteHaute+objetExt.getHauteur())> this.getY()) && ((objetExt.getY()+this._limiteHaute)<(this.getY()+this.getHauteur())) && (objetExt.getX()+objetExt.getLongueur()>this.getX())) {
     if (this._inBox !== true) {
-      if (objetExt._incrementX>0) {
-        objetExt._incrementX++;
-      }else {
-        objetExt._incrementX--;
-      }
-      if (objetExt._incrementY>0) {
-        objetExt._incrementY++;
-      }else {
-        objetExt._incrementY--;
-      }
+      this.vitesseBalle(objetExt);
       objetExt._incrementX *= -1;
       if (objetExt.getX()-this.getX()<5) {
         objetExt._incrementY *= -1;
@@ -443,3 +428,24 @@ classJoueur.limiteBasse = function(){
     this.setY(this._limiteBasse-this.getHauteur()-1);
   }
 };
+//Appelle les methode d'augmentation de vitesse de balle X et Y
+classJoueur.vitesseBalle = function(objetBalle){
+  this.vitesseBalleX(objetBalle);
+  this.vitesseBalleY(objetBalle);
+};
+//Si les conditions sont remplies, augmente la vitesse de la balle en X
+classJoueur.vitesseBalleX = function(objetExt){
+  if (objetExt._incrementX>0) {
+    objetExt._incrementX++;
+  }else {
+    objetExt._incrementX--;
+  }
+}
+//Si les conditions sont remplies, augmente la vitesse de la balle en
+classJoueur.vitesseBalleY = function(objetExt){
+  if (objetExt._incrementY>0) {
+    objetExt._incrementY++;
+  }else {
+    objetExt._incrementY--;
+  }
+}
