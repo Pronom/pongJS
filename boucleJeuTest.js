@@ -57,7 +57,7 @@ function init(){
   balle = Object.create(classBalle);
   balle._zoneJ = zoneJ; //Récupération de la balise de la zone de jeu
   //Appel de son constructeur
-  balle.constructeur(40,40,2,"white","#949494", "#fffffff" , "premierObjet", "", 0, 0, 8);
+  balle.constructeur(40,40,2,"white","#949494", "#ffffff" , "premierObjet", "", 0, 0, 4);
   //Création de l'élément HTML
   balle.fabriquerElement();
 
