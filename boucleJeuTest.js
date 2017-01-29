@@ -17,14 +17,9 @@ $("body").on("keydown", function noName() {
   joueur1._code =  event.keycode || event.which;
   joueur2._code =  event.keycode || event.which;
   pauseCode = event.keycode || event.which;
-  console.log(pauseCode);
   if (pauseCode === 80) {
     if (pause === true) {
       pause = false;
-      console.log("X =" + joueur2.getX());
-      console.log("LongueurX ="+ (joueur2.getX()+joueur2.getLongueur()));
-      console.log("Y =" + joueur2.getY());
-      console.log("HauteurY ="+ (joueur2.getY()+joueur2.getHauteur()));
     }
     else {
       pause = true;
@@ -33,6 +28,12 @@ $("body").on("keydown", function noName() {
     $(".infoDepart").hide();
     $(".infoIG").show();
   }
+});
+
+//Remet à 0 les variable de code de touche des joueurs
+$("body").on("keyup",function(){
+  joueur1._code = 0;
+  joueur2._code = 0;
 });
 
 //Fonction Random
@@ -402,11 +403,9 @@ classJoueur.collide = function(objetExt){
 classJoueur.keyPressed = function(){
   if (this._code === this._up) {
     this._y -= this._incrementY;
-    this._code = 0;
   }
   if (this._code === this._down) {
     this._y += this._incrementY;
-    this._code = 0;
   }
 };
 //Polymorphisme méthode Update
