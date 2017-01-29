@@ -7,10 +7,12 @@ var seconde = 1000, fps = 60, tick = seconde/fps;
 var zoneJ = $(".zoneJeu");
 //initialisation globalle de la balle et des joueurs
 var balle, joueur2, joueur1;
-var pause = true;
-var pauseCode = 0;
+//pause : définit si le jeu est en pause ou non
+//pauseCode : variable ayant pour objectif de récupérer le code de la touche P
+var pause = true, pauseCode = 0;
 
 //Permet la récupération du code de la touche clavier appuyée
+//Et permet de mettre en pause le jeu quand on appuie sur la touche P;
 $("body").on("keypress", function noName() {
   joueur1._code =  event.keycode || event.which;
   joueur2._code =  event.keycode || event.which;
@@ -37,6 +39,7 @@ function getRand(){
   return Math.random();
 }
 
+//Méthode qui met en pause le jeu quand on clique sur le bouton s'y référant
 $("#pause").click(function(){
   if (pause === true) {
     pause = false;
@@ -85,10 +88,26 @@ function init(){
   //Ne peut être fait que la ou à été instancié l'objet
   joueur2.collideJ2 = function(objetExt){
     if (((objetExt.getX()+objetExt.getLongueur()) >= (this.getX())) && ((objetExt.getY()+this._limiteHaute)< this.getY()+this.getHauteur()) && ((objetExt.getY()+objetExt.getHauteur()+this._limiteHaute)>=(this.getY())) /*&& (objetExt.getX()+objetExt.getLongueur()<this.getX()+this.getLongueur())*/) {
-      objetExt._incrementX *= -1;
-      if (this.getX()-objetExt.getX()<5) {
-        objetExt._incrementY *= -1;
+      if (this._inBox !==true) {
+        if (objetExt._incrementX>0) {
+          objetExt._incrementX++;
+        }else {
+          objetExt._incrementX--;
+        }
+        if (objetExt._incrementY>0) {
+          objetExt._incrementY++;
+        }else {
+          objetExt._incrementY--;
+        }
+        objetExt._incrementX *= -1;
+        if (this.getX()-objetExt.getX()<5) {
+          objetExt._incrementY *= -1;
+        }
+        this._inBox = true;
       }
+    }
+    else {
+      this._inBox = false;
     }
   };
   //Place la balle au centre de l'écran
@@ -111,7 +130,6 @@ $(document).ready(function(){
       update();
       draw();
     }
-
   }, tick );
 
   //Méthode de mise à jour des éléments visuels
@@ -292,10 +310,30 @@ var objetBloc = {
 var classBalle = Object.create(objetBloc);
 //Définition de la zone de jeu. A définir juste après instanciation
 classBalle._zoneJ;
+classBalle._initIncrementX = this._incrementX;
+classBalle._initIncrementY = this._incrementY;
+classBalle.constructeur = function construitBalle(height,width,deep,colorFond, colorShadowInt, colorShadowExt,id, float, y, x, vit){
+  this._hauteur = height;
+  this._longueur = width;
+  this._planZ = deep;
+  this._couleurFond = colorFond;
+  this._couleurInt = colorShadowInt;
+  this._couleurExt = colorShadowExt;
+  this._id = id;
+  this._positionInit = float;
+  this._x = x;
+  this._y = y;
+  this._incrementX = vit;
+  this._incrementY = vit;
+  this._initIncrementX = vit;
+  this._initIncrementY = vit;
+}
 //Place la balle au centre de la zone de jeu
 classBalle.resetBallPosition = function(){
   this._x = this._zoneJ.width()/2-this.getHauteur()/2;
   this._y = this._zoneJ.height()/2-this._hauteur/2;
+  this._incrementX = this._initIncrementX;
+  this._incrementY = this._initIncrementY;
 };
 //Appelle les méthode de placement et direction de la balle sur X et Y
 classBalle.mvtBall = function(){
@@ -344,19 +382,35 @@ classBalle.departBalle = function(){
 
 //Objet Joueur, hérite de objetBloc
 var classJoueur = Object.create(objetBloc);
-classJoueur._up = 0;    //Pour attribuer le code de la tocuhe de déplacement Haut du bloc
-classJoueur._down = 0;  //Pour attribuer le code de la tocuhe de déplacement Bas du bloc
-classJoueur._code = 0;  //Code de la touche préssée courante
-classJoueur._limiteHaute = 0;
-classJoueur._limiteBasse = 0;
+classJoueur._up = 0;          //Pour attribuer le code de la tocuhe de déplacement Haut du bloc
+classJoueur._down = 0;        //Pour attribuer le code de la tocuhe de déplacement Bas du bloc
+classJoueur._code = 0;        //Code de la touche préssée courante
+classJoueur._limiteHaute = 0; //Définit la limite haute de la zone de jeu (est décalée a cause de la hauteur des éléments HTML précédents dans la zone)
+classJoueur._limiteBasse = 0; //Définit la limite basse de la zone de jeu (est décalée a cause de la hauteur des éléments HTML précédents dans la zone)
+classJoueur._inBox = false;   //Objectif : Verouiller l'inversion d'incrémentation X tant que la balle est à l'intérieur du joueur
 //Vérifie si un element est dans la zone du bloc
 //Si oui lui change sa direction
 classJoueur.collide = function(objetExt){
   if ((objetExt.getX() <= (this.getLongueur()+this.getX())) && ((objetExt.getY()+this._limiteHaute+objetExt.getHauteur())> this.getY()) && ((objetExt.getY()+this._limiteHaute)<(this.getY()+this.getHauteur())) && (objetExt.getX()+objetExt.getLongueur()>this.getX())) {
-    objetExt._incrementX *= -1;
-    if (objetExt.getX()-this.getX()<5) {
-      objetExt._incrementY *= -1;
+    if (this._inBox !== true) {
+      if (objetExt._incrementX>0) {
+        objetExt._incrementX++;
+      }else {
+        objetExt._incrementX--;
+      }
+      if (objetExt._incrementY>0) {
+        objetExt._incrementY++;
+      }else {
+        objetExt._incrementY--;
+      }
+      objetExt._incrementX *= -1;
+      if (objetExt.getX()-this.getX()<5) {
+        objetExt._incrementY *= -1;
+      }
+      this._inBox = true;
     }
+  }else {
+    this._inBox = false;
   }
 };
 //Verifie que la touche préssée correspond à la touche attibuée
@@ -371,17 +425,19 @@ classJoueur.keyPressed = function(){
   }
 };
 //Polymorphisme méthode Update
-//Appelle la méthode keyPressed
+//Appelle la méthode keyPressed, limiteBasse et limiteHaute
 classJoueur.update = function joueurUpdate(){
     this.keyPressed();
     this.limiteBasse();
     this.limiteHaute();
 };
+//Si le joueur dépace la zone replace le joueur en position Y minimale
 classJoueur.limiteHaute = function(){
   if (this.getY()<this._limiteHaute) {
     this.setY(this._limiteHaute+1);
   }
 };
+//Si le joueur dépace la zone replace le joueur en position Y maximale
 classJoueur.limiteBasse = function(){
   if (this.getY()+this.getHauteur()>this._limiteBasse) {
     this.setY(this._limiteBasse-this.getHauteur()-1);
