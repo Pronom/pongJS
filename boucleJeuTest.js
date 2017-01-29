@@ -29,14 +29,14 @@ function init(){
   balle = Object.create(classBalle);
   balle._zoneJ = zoneJ; //Récupération de la balise de la zone de jeu
   //Appel de son constructeur
-  balle.constructeur(40,40,2,"white","premierObjet", "", 0, 0, 8);
+  balle.constructeur(40,40,2,"white","red", "blue" , "premierObjet", "", 0, 0, 8);
   //Création de l'élément HTML
   balle.fabriquerElement();
 
   //Initialisation du joueur 1
   joueur1 = Object.create(classJoueur);
   //Appel de son constructeur
-  joueur1.constructeur(160, 40,1, "red", "J1Bloc", "", -40, 30 ,20);
+  joueur1.constructeur(160, 40,1, "tomato", "darkred" , "orangered", "J1Bloc", "", -40, 30 ,20);
   //Définition du codes de touches Haut et Bas
   joueur1._up = 113;    //113 correspond à la touche 'Q'
   joueur1._down = 100;  //100 correspond à la touche 'D'
@@ -46,7 +46,7 @@ function init(){
   //Initialisation du joueur 2
   joueur2 = Object.create(classJoueur);
   //Appel de son contrcuteur
-  joueur2.constructeur(160, 40,1, "blue", "J2Bloc", "", -200, zoneJ.width()-80 ,20);
+  joueur2.constructeur(160, 40,1, "deepskyblue", "darkblue" , "royalblue", "J2Bloc", "", -200, zoneJ.width()-80 ,20);
   //Définition du codes de touches Haut et Bas
   joueur2._up = 52;   //52 correspond à la touche '4' du pavé numérique
   joueur2._down = 54; //54 correspond à la touche '6' du pavé numérique
@@ -110,7 +110,9 @@ var objetBloc = {
   _longueur : 0,      //longueur de l'élément
   _planZ : 0,         //plan sur l'axe Z de l'élément:
   _id : "",           //id de la balide html
-  _couleur : "",      //background-color de l'élément
+  _couleurFond : "",      //background-color de l'élément
+  _couleurInt : "",      //shadow inset color de l'élément
+  _couleurExt : "",      //shadow color de l'élément
   _positionInit : "", //position de l'élément par rapport à la zone de jeu
   _x : 0,             //valeur X de l'objet
   _y : 0,             //valeur Y de l'objet
@@ -144,10 +146,22 @@ var objetBloc = {
     this._id = val;
   },
   getCouleur : function getCol(){
-    return this._couleur;
+    return this._couleurFond;
   },
   setCouleur : function setCol(val){
-    this._couleur = val;
+    this._couleurFond = val;
+  },
+  getCouleurInt : function getColIn(){
+    return this._couleurInt;
+  },
+  setCouleurInt : function setColIn(val){
+    this._couleurInt = val;
+  },
+  getCouleurExt : function getColEx(){
+    return this._couleurExt;
+  },
+  setCouleurExt : function setColEx(val){
+    this._couleurExt = val;
   },
   getFloat : function getFlo(){
     return this._positionInit;
@@ -194,11 +208,13 @@ var objetBloc = {
   //Constructeur
   //Initialise les propriétés de l'objet
   //Prend en paramètres les élements css, html, js
-  constructeur : function construit(height,width,deep,color,id, float, y, x, vit){
+  constructeur : function construit(height,width,deep,colorFond, colorShadowInt, colorShadowExt,id, float, y, x, vit){
     this._hauteur = height;
     this._longueur = width;
     this._planZ = deep;
-    this._couleur = color;
+    this._couleurFond = colorFond;
+    this._couleurInt = colorShadowInt;
+    this._couleurExt = colorShadowExt;
     this._id = id;
     this._positionInit = float;
     this._x = x;
@@ -214,8 +230,10 @@ var objetBloc = {
     this.defCss("height", this._hauteur);
     this.defCss("width", this._longueur);
     this.defCss("z-index", this._planZ);
-    this.defCss("background-color", this._couleur);
+    this.defCss("background-color", this._couleurFond);
     this.defCss("position", "relative");
+    this.defCss("box-shadow", "inset 1px 1px 30px "+this.getCouleurInt() +", 0 0 50px -5px "+this.getCouleurExt());
+    this.defCss("border", "1px solid black")
     if (this._positionInit === "right" || this._positionInit === "left") {
       this.defCss("float", this._positionInit);
     }
