@@ -1,0 +1,29 @@
+body{
+  background-color: #383838;
+  height: 100px
+}
+
+
+.zoneJeu{
+  background-color: black;
+  height: 675px;
+  width: 1200px;
+  position: absolute;
+}
+
+.Score{
+  font-size: 2em;
+  color : white;
+  width : 1200px;
+  font-family: sans-serif;
+  background-color: black;
+  border-bottom: 3px solid white;
+}
+
+.info{
+  font-size: 20px;
+}
+.posScore{
+  margin-left: 90px;
+  margin-right: 90px;
+}
