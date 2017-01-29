@@ -16,6 +16,12 @@ $("body").on("keypress", function noName() {
   }
 );
 
+//Fonction Random
+//Renvoi une valeur entre 0 inclus et 1 exclus. Exemple: 0.7280822143439332
+function getRand(){
+  return Math.random();
+}
+
 //Initialisation du jeux;
 //Permet de créer tout les paramètres et tout les éléments de base du jeu
 function init(){
@@ -58,6 +64,8 @@ function init(){
   };
   //Place la balle au centre de l'écran
   balle.resetBallPosition();
+
+  balle.departBalle();
 }
 
 $(document).ready(function(){
@@ -270,6 +278,17 @@ classBalle.mvtBallY = function(){
 //Polymorphisme méthode Update
 classBalle.update = function balleUpdate(){
     this.mvtBall();
+};
+//Définit aléatoirement la direction de la balle en X et Y
+classBalle.departBalle = function(){
+  var departX = getRand();
+  var departY = getRand();
+  if (departX <= 0.5) {
+    this._incrementX *= -1;
+  }
+  if (departY <= 0.5) {
+    this._incrementY *= -1;
+  }
 };
 
 
