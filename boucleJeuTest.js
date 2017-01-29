@@ -1,8 +1,8 @@
 //setInterval fonction en milliseconde s'execute tout les xIntervaldonné
 //initialisation de 1 seconde (1000ms)
-//définition du nombre d'image par seconde nbrTick = 60
-//interval de temps  est exécuté setInterval fps = seconde/nbrTick
-var seconde = 1000, nbrTick = 60, fps = seconde/nbrTick;
+//définition du nombre d'image par seconde fps = 60
+//interval de temps  est exécuté setInterval tick = seconde/fps
+var seconde = 1000, fps = 60, tick = seconde/fps;
 //Appelle l'élément html zoneJeu
 var zoneJ = $(".zoneJeu");
 //initialisation globalle de la balle et des joueurs
@@ -80,7 +80,7 @@ $(document).ready(function(){
   setInterval(function () {
       update();
       draw();
-  }, fps );
+  }, tick );
 
   //Méthode de mise à jour des éléments visuels
   function draw(){
