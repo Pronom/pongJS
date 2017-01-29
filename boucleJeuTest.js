@@ -7,20 +7,42 @@ var seconde = 1000, fps = 60, tick = seconde/fps;
 var zoneJ = $(".zoneJeu");
 //initialisation globalle de la balle et des joueurs
 var balle, joueur2, joueur1;
-var pause = 0;
+var pause = true;
+var pauseCode = 0;
 
 //Permet la récupération du code de la touche clavier appuyée
 $("body").on("keypress", function noName() {
   joueur1._code =  event.keycode || event.which;
   joueur2._code =  event.keycode || event.which;
+  pauseCode = event.keycode || event.which;
+  console.log(pauseCode);
+  if (pauseCode === 112) {
+    if (pause === true) {
+      pause = false;
+    }
+    else {
+      pause = true;
+    }
+    pauseCode = 0;
+    $(".infoDepart").hide();
   }
-);
+});
 
 //Fonction Random
 //Renvoi une valeur entre 0 inclus et 1 exclus. Exemple: 0.7280822143439332
 function getRand(){
   return Math.random();
 }
+
+$("#pause").click(function(){
+  if (pause === true) {
+    pause = false;
+  }
+  else {
+    pause = true;
+  }
+  $(".infoDepart").hide();
+});
 
 //Initialisation du jeux;
 //Permet de créer tout les paramètres et tout les éléments de base du jeu
@@ -29,14 +51,14 @@ function init(){
   balle = Object.create(classBalle);
   balle._zoneJ = zoneJ; //Récupération de la balise de la zone de jeu
   //Appel de son constructeur
-  balle.constructeur(40,40,2,"white","red", "blue" , "premierObjet", "", 0, 0, 8);
+  balle.constructeur(40,40,2,"white","#949494", "#fffffff" , "premierObjet", "", 0, 0, 8);
   //Création de l'élément HTML
   balle.fabriquerElement();
 
   //Initialisation du joueur 1
   joueur1 = Object.create(classJoueur);
   //Appel de son constructeur
-  joueur1.constructeur(160, 40,1, "tomato", "darkred" , "orangered", "J1Bloc", "", -40, 30 ,20);
+  joueur1.constructeur(160, 40,1, "#cc0000", "#710404" , "red", "J1Bloc", "", -40, 30 ,20);
   //Définition du codes de touches Haut et Bas
   joueur1._up = 113;    //113 correspond à la touche 'Q'
   joueur1._down = 100;  //100 correspond à la touche 'D'
@@ -46,7 +68,7 @@ function init(){
   //Initialisation du joueur 2
   joueur2 = Object.create(classJoueur);
   //Appel de son contrcuteur
-  joueur2.constructeur(160, 40,1, "deepskyblue", "darkblue" , "royalblue", "J2Bloc", "", -200, zoneJ.width()-80 ,20);
+  joueur2.constructeur(160, 40,1, "#0618bd", "black" , "#0100ff", "J2Bloc", "", -200, zoneJ.width()-80 ,20);
   //Définition du codes de touches Haut et Bas
   joueur2._up = 52;   //52 correspond à la touche '4' du pavé numérique
   joueur2._down = 54; //54 correspond à la touche '6' du pavé numérique
@@ -78,8 +100,11 @@ $(document).ready(function(){
   //par le nombre de tick par seconde
   //Appelle les méthode update et draw
   setInterval(function () {
+    if (pause=== false) {
       update();
       draw();
+    }
+
   }, tick );
 
   //Méthode de mise à jour des éléments visuels
@@ -232,7 +257,7 @@ var objetBloc = {
     this.defCss("z-index", this._planZ);
     this.defCss("background-color", this._couleurFond);
     this.defCss("position", "relative");
-    this.defCss("box-shadow", "inset 1px 1px 30px "+this.getCouleurInt() +", 0 0 50px -5px "+this.getCouleurExt());
+    this.defCss("box-shadow", "inset 1px 1px 40px "+this.getCouleurInt() +", 0 0 75px -3px "+this.getCouleurExt());
     this.defCss("border", "1px solid black")
     if (this._positionInit === "right" || this._positionInit === "left") {
       this.defCss("float", this._positionInit);

@@ -3,6 +3,9 @@ body{
   height: 100px
 }
 
+.centrage{
+  margin: auto;
+}
 
 .zoneJeu{
   background-color: black;
@@ -26,4 +29,17 @@ body{
 .posScore{
   margin-left: 90px;
   margin-right: 90px;
+}
+
+
+.infoDepart{
+  color : white;
+  font-family: sans-serif;
+  font-size: 2em;
+}
+
+#pause{
+  height: 50px;
+  width: 100px;
+  font-size: 1em;
 }
